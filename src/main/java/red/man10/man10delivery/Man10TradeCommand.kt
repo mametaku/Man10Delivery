@@ -1,7 +1,6 @@
 package red.man10.man10delivery
 
 
-import jdk.internal.net.http.common.Pair
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.command.Command
@@ -55,7 +54,7 @@ class Man10TradeCommand(internal var plugin: Man10Delivery) : CommandExecutor {
             return true
         }
 
-        if (!Bukkit.getPlayer(args[0]).isOnline) {
+        if (!Bukkit.getPlayer(args[0])?.isOnline!!) {
             sender.sendMessage(plugin.prefix + "§eトレードする相手の名前が間違えてる、もしくはオフラインです")
             return true
         }
@@ -77,12 +76,12 @@ class Man10TradeCommand(internal var plugin: Man10Delivery) : CommandExecutor {
             pair.sendMessage(plugin.prefix + "自分とトレードはできません")
         }
 
-        tradePair.add(Pair(pair, p))
+        tradePair.add(Pair(pair, p) as Pair<Player, Player>)
 
-        Bukkit.getScheduler().runTask(plugin) {
+        Bukkit.getScheduler().runTask(plugin,Runnable{
 
-            p.sendMessage(plugin.prefix + "§e§l" + pair.name + "§r§eからトレード申請が来ています！")
-            p.sendMessage(plugin.prefix + "§e§l/mtrade accept (30秒以上経過すると、キャンセルされます)")
+            p?.sendMessage(plugin.prefix + "§e§l" + pair.name + "§r§eからトレード申請が来ています！")
+            p?.sendMessage(plugin.prefix + "§e§l/mtrade accept (30秒以上経過すると、キャンセルされます)")
 
             try {
                 Thread.sleep(3000)
@@ -92,7 +91,7 @@ class Man10TradeCommand(internal var plugin: Man10Delivery) : CommandExecutor {
             }
 
 
-        }
+        })
 
     }
 
@@ -101,7 +100,7 @@ class Man10TradeCommand(internal var plugin: Man10Delivery) : CommandExecutor {
 
         val stack = ItemStack(Material.GLASS_PANE, 1)
         val meta = stack.itemMeta
-        meta.displayName = ""
+        meta.setDisplayName("")
         stack.itemMeta = meta
 
         val index = intArrayOf(5, 14, 23, 32, 41, 50)
@@ -110,21 +109,20 @@ class Man10TradeCommand(internal var plugin: Man10Delivery) : CommandExecutor {
             inv.setItem(i, stack)
         }
 
-        stack.type = Material.GLASS_PANE
-        stack.durability = 5.toShort()
-        meta.displayName = "§a§l完了"
+        stack.type = Material.LIME_STAINED_GLASS_PANE
+        meta.setDisplayName("§a§l完了")
         stack.itemMeta = meta
         inv.setItem(46, stack)
         inv.setItem(47, stack)
 
-        stack.durability = 14.toShort()
-        meta.displayName = "§4§l取引中止"
+        stack.type = Material.RED_STAINED_GLASS_PANE
+        meta.setDisplayName("§4§l取引中止")
         stack.itemMeta = meta
         inv.setItem(48, stack)
         inv.setItem(49, stack)
 
-        stack.durability = 1.toShort()
-        meta.displayName = "§l相手は取引完了していません"
+        stack.type = Material.ORANGE_STAINED_GLASS_PANE
+        meta.setDisplayName("§l相手は取引完了していません")
         stack.itemMeta = meta
         inv.setItem(51, stack)
         inv.setItem(52, stack)
@@ -133,40 +131,40 @@ class Man10TradeCommand(internal var plugin: Man10Delivery) : CommandExecutor {
 
 
         stack.type = Material.BLAZE_POWDER
-        meta.displayName = "§a§l+10,000$"
+        meta.setDisplayName("§a§l+10,000$")
         stack.itemMeta = meta
         inv.setItem(40, stack)
 
         stack.type = Material.GREEN_DYE
-        meta.displayName = "§a§l+100,000$"
+        meta.setDisplayName("§a§l+100,000$")
         stack.itemMeta = meta
         inv.setItem(39, stack)
 
         stack.type = Material.BLUE_DYE
-        meta.displayName = "§a§l+1,000,000$"
+        meta.setDisplayName("§a§l+1,000,000$")
         stack.itemMeta = meta
         inv.setItem(38, stack)
 
         stack.type = Material.YELLOW_DYE
-        meta.displayName = "§a§l+10,000,000$"
+        meta.setDisplayName("§a§l+10,000,000$")
         stack.itemMeta = meta
         inv.setItem(37, stack)
 
 
         stack.type = Material.OAK_SIGN
-        meta.displayName = "§lあなたが支払う金額:§e§l0$"
+        meta.setDisplayName("§lあなたが支払う金額:§e§l0$")
         stack.itemMeta = meta
         inv.setItem(43, stack)
 
-        meta.displayName = "§l相手が支払う金額：§e§l0$"
+        meta.setDisplayName("§l相手が支払う金額：§e§l0$")
         stack.itemMeta = meta
         inv.setItem(44, stack)
 
-        meta.displayName = p2.name
+        meta.setDisplayName(p2.name+"")
         inv.setItem(45, stack)
         p1.openInventory(inv)
 
-        meta.displayName = p1.name
+        meta.setDisplayName(p1.name+"")
         inv.setItem(45, stack)
 
         p2.openInventory(inv)
@@ -228,7 +226,9 @@ class Man10TradeCommand(internal var plugin: Man10Delivery) : CommandExecutor {
     }
 
     fun addItem(player: Player, send: ItemStack?){
-        sendItem[player]!!.add(send)
+        if (send != null) {
+            sendItem[player]!!.add(send)
+        }
 
         val inv = getPair(player).inventory
         inv.addItem(send)
@@ -272,7 +272,7 @@ class Man10TradeCommand(internal var plugin: Man10Delivery) : CommandExecutor {
 
 
     fun getPair(p:Player):Player{
-        return Bukkit.getPlayer(p.inventory.getItem(45).itemMeta.displayName)
+        return Bukkit.getPlayer(p.inventory.getItem(45)?.itemMeta!!.displayName)!!
     }
 
 }

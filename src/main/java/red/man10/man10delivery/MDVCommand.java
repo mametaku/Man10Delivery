@@ -12,9 +12,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import red.man10.man10vaultapiplus.JPYBalanceFormat;
-import red.man10.man10vaultapiplus.enums.TransactionCategory;
-import red.man10.man10vaultapiplus.enums.TransactionType;
 
 import java.util.ArrayList;
 import java.util.List;
